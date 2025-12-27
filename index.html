@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PinkCam Studio | Professional Photo Booth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        .pink-glow { box-shadow: 0 0 20px rgba(244, 114, 182, 0.3); }
+        #video-feed { transform: scaleX(-1); border-radius: 1.5rem; transition: filter 0.3s ease; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 via-white to-pink-100 min-h-screen text-slate-800">
+
+    <nav class="glass-panel sticky top-0 z-50 border-b border-pink-100 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="bg-pink-500 p-2 rounded-lg text-white"><i class="fas fa-camera-retro fa-lg"></i></div>
+            <h1 class="text-xl font-extrabold tracking-tighter text-pink-600 italic">PINKCAM <span class="text-slate-400 font-light">STUDIO</span></h1>
+        </div>
+        <div class="flex items-center gap-6 text-sm font-semibold text-pink-400">
+            <span class="hover:text-pink-600 cursor-pointer transition">STUDIO</span>
+            <span class="hover:text-pink-600 cursor-pointer transition">EDITOR</span>
+            <span class="hover:text-pink-600 cursor-pointer transition">PRESETS</span>
+            <button class="bg-pink-500 text-white px-5 py-2 rounded-full hover:bg-pink-600 transition shadow-lg pink-glow">GO PRO</button>
+        </div>
+    </nav>
+
+    <main class="max-w-[1600px] mx-auto p-4 lg:p-8 grid grid-cols-12 gap-8">
+        
+        <aside class="col-span-12 lg:col-span-3 space-y-6">
+            <div class="glass-panel p-6 rounded-3xl border border-pink-100 shadow-xl">
+                <h3 class="text-xs font-bold text-pink-400 uppercase tracking-widest mb-4">Camera Settings</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-pink-50 rounded-xl">
+                        <span class="text-sm font-semibold">Aspect Ratio</span>
+                        <select class="bg-transparent text-xs font-bold text-pink-600 outline-none"><option>16:9 Wide</option><option>4:3 Classic</option><option>1:1 Square</option></select>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-pink-50 rounded-xl">
+                        <span class="text-sm font-semibold">Auto-Flash</span>
+                        <div class="w-10 h-5 bg-pink-200 rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-pink-400 text-xs font-bold uppercase tracking-widest">Session Storage</p>
+                    <h4 id="photo-count" class="text-4xl font-bold mt-2">0</h4>
+                    <p class="text-slate-400 text-sm">Photos Captured</p>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-pink-500/20 text-8xl rotate-12"><i class="fas fa-bolt"></i></div>
+            </div>
+        </aside>
+
+        <section class="col-span-12 lg:col-span-6 space-y-6">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-pink-400 to-rose-400 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                <div class="relative glass-panel rounded-[2rem] overflow-hidden shadow-2xl bg-black aspect-video flex items-center justify-center border-4 border-white">
+                    <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    
+                    <div id="flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-100"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center gap-8 py-4">
+                <button class="w-12 h-12 rounded-full border border-pink-200 text-pink-400 hover:bg-pink-100 transition"><i class="fas fa-clock"></i></button>
+                <button id="shutter" class="group relative">
+                    <div class="absolute -inset-4 bg-pink-200 rounded-full opacity-50 group-hover:scale-110 transition duration-500"></div>
+                    <div class="relative w-20 h-20 bg-white border-4 border-pink-500 rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition">
+                        <div class="w-14 h-14 bg-pink-500 rounded-full"></div>
+                    </div>
+                </button>
+                <button class="w-12 h-12 rounded-full border border-pink-200 text-pink-400 hover:bg-pink-100 transition"><i class="fas fa-cog"></i></button>
+            </div>
+
+            <div class="glass-panel p-6 rounded-3xl border border-pink-100 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-sm font-bold text-slate-600 uppercase">Pro Filters <span class="text-pink-400 ml-2">100+</span></h3>
+                    <div class="flex gap-2">
+                        <button class="text-pink-500 hover:bg-pink-50 p-1 px-2 rounded text-xs font-bold transition">B&W</button>
+                        <button class="text-pink-500 hover:bg-pink-50 p-1 px-2 rounded text-xs font-bold transition">VINTAGE</button>
+                        <button class="text-pink-500 hover:bg-pink-50 p-1 px-2 rounded text-xs font-bold transition">NEON</button>
+                    </div>
+                </div>
+                <div id="filter-grid" class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                    </div>
+            </div>
+        </section>
+
+        <aside class="col-span-12 lg:col-span-3">
+            <div class="glass-panel p-6 rounded-3xl border border-pink-100 shadow-xl min-h-[600px] flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-800">History</h2>
+                    <span class="text-xs font-bold text-pink-500 bg-pink-50 px-2 py-1 rounded-lg">LIVE SYNC</span>
+                </div>
+                <div id="gallery" class="grid grid-cols-2 gap-3 overflow-y-auto custom-scrollbar flex-grow">
+                    </div>
+                <button class="mt-6 w-full py-4 border-2 border-dashed border-pink-200 rounded-2xl text-pink-400 font-bold hover:bg-pink-50 transition">
+                    <i class="fas fa-cloud-upload-alt mr-2"></i> EXPORT ALL
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="mt-12 py-12 border-t border-pink-100 glass-panel">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            <div>
+                <h4 class="font-bold text-pink-600 mb-4">PinkCam Pro</h4>
+                <p class="text-sm text-slate-400 leading-relaxed">The ultimate digital photo booth experience, built for creators who value aesthetics and performance.</p>
+            </div>
+            <div class="flex flex-col gap-2 text-sm font-medium text-slate-500">
+                <a href="#" class="hover:text-pink-500">Privacy Policy</a>
+                <a href="#" class="hover:text-pink-500">Terms of Service</a>
+                <a href="#" class="hover:text-pink-500">System Status</a>
+            </div>
+            <div class="text-center md:text-right">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Architected & Engineered By</p>
+                <p class="text-2xl font-black text-pink-500 drop-shadow-sm">Samik Nepal</p>
+                <p class="text-xs text-slate-400 mt-1">© 2024 All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
